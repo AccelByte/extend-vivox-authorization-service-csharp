@@ -45,7 +45,7 @@ build_gateway: proto
 		-v $$(pwd):/data \
 		-w /data/gateway \
 		golang:1.20-alpine3.19 \
-		go build -o grpc_gateway
+		go build -modcacherw -o grpc_gateway
 
 run_server:
 	rm -rf .output .tmp
@@ -72,7 +72,7 @@ run_gateway: proto
 		-p 8000:8000 \
 		--add-host host.docker.internal:host-gateway \
 		golang:1.20-alpine3.19 \
-		go run main.go --grpc-addr host.docker.internal:6565
+		go run -modcacherw main.go --grpc-addr host.docker.internal:6565
 
 image:
 	docker build -t ${IMAGE_NAME} .
