@@ -80,12 +80,18 @@ namespace AccelByte.Extend.Vivox.Authentication.Server.Services
 
             if (token == null)
                 throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid request type"));
-            
-            return Task.FromResult(new GenerateVivoxTokenResponse()
+
+            GenerateVivoxTokenResponse response = new GenerateVivoxTokenResponse()
             {
-                Uri = token.Claims.To,
                 AccessToken = token.Value
-            });
+            };
+
+            if (token.Claims.To != null)
+            {
+                response.Uri = token.Claims.To;
+            }
+
+            return Task.FromResult(response);
         }
     }
 }
