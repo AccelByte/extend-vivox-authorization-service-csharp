@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Service API",
+    "title": "Vivox Authentication",
     "version": "1.0"
   },
   "tags": [
@@ -10,10 +10,6 @@
     }
   ],
   "basePath": "/service",
-  "schemes": [
-    "http",
-    "https"
-  ],
   "consumes": [
     "application/json"
   ],
@@ -21,16 +17,15 @@
     "application/json"
   ],
   "paths": {
-    "/v1/admin/namespace/{namespace}/progress": {
+    "/v1/token": {
       "post": {
-        "summary": "Update Guild progression",
-        "description": "Update Guild progression if not existed yet will create a new one",
-        "operationId": "Service_CreateOrUpdateGuildProgress",
+        "summary": "Generate Vivox token",
+        "operationId": "Service_GenerateVivoxToken",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/serviceCreateOrUpdateGuildProgressResponse"
+              "$ref": "#/definitions/serviceGenerateVivoxTokenResponse"
             }
           },
           "default": {
@@ -41,67 +36,13 @@
           }
         },
         "parameters": [
-          {
-            "name": "namespace",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "guildProgress": {
-                  "$ref": "#/definitions/serviceGuildProgress"
-                }
-              }
+              "$ref": "#/definitions/serviceGenerateVivoxTokenRequest"
             }
-          }
-        ],
-        "tags": [
-          "Service"
-        ],
-        "security": [
-          {
-            "Bearer": []
-          }
-        ]
-      }
-    },
-    "/v1/admin/namespace/{namespace}/progress/{guildId}": {
-      "get": {
-        "summary": "Get guild progression",
-        "description": "Get guild progression",
-        "operationId": "Service_GetGuildProgress",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/serviceGetGuildProgressResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "guildId",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "tags": [
@@ -144,37 +85,64 @@
         }
       }
     },
-    "serviceCreateOrUpdateGuildProgressResponse": {
+    "serviceGenerateVivoxTokenRequest": {
       "type": "object",
       "properties": {
-        "guildProgress": {
-          "$ref": "#/definitions/serviceGuildProgress"
+        "type": {
+          "$ref": "#/definitions/serviceGenerateVivoxTokenRequestType",
+          "description": "Required"
+        },
+        "username": {
+          "type": "string",
+          "description": "Required"
+        },
+        "channelId": {
+          "type": "string",
+          "description": "Required if type = join"
+        },
+        "channelType": {
+          "$ref": "#/definitions/serviceGenerateVivoxTokenRequestChannelType",
+          "description": "Required if type = join"
+        },
+        "targetUsername": {
+          "type": "string",
+          "description": "Required if type = kick"
         }
-      }
+      },
+      "required": [
+        "type",
+        "username"
+      ]
     },
-    "serviceGetGuildProgressResponse": {
+    "serviceGenerateVivoxTokenRequestChannelType": {
+      "type": "string",
+      "enum": [
+        "generatevivoxtokenrequest_channeltype_unknown",
+        "echo",
+        "positional",
+        "nonpositional"
+      ],
+      "default": "generatevivoxtokenrequest_channeltype_unknown"
+    },
+    "serviceGenerateVivoxTokenRequestType": {
+      "type": "string",
+      "enum": [
+        "generatevivoxtokenrequest_type_unknown",
+        "login",
+        "join",
+        "join_muted",
+        "kick"
+      ],
+      "default": "generatevivoxtokenrequest_type_unknown"
+    },
+    "serviceGenerateVivoxTokenResponse": {
       "type": "object",
       "properties": {
-        "guildProgress": {
-          "$ref": "#/definitions/serviceGuildProgress"
-        }
-      }
-    },
-    "serviceGuildProgress": {
-      "type": "object",
-      "properties": {
-        "guildId": {
+        "accessToken": {
           "type": "string"
         },
-        "namespace": {
+        "uri": {
           "type": "string"
-        },
-        "objectives": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "integer",
-            "format": "int32"
-          }
         }
       }
     }

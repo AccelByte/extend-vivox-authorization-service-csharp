@@ -1,4 +1,4 @@
-// Copyright (c) 2023 AccelByte Inc. All Rights Reserved.
+// Copyright (c) 2025 AccelByte Inc. All Rights Reserved.
 // This is licensed software from AccelByte Inc, for limitations
 // and restrictions contact your company contract manager.
 
@@ -23,16 +23,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Service_CreateOrUpdateGuildProgress_FullMethodName = "/service.Service/CreateOrUpdateGuildProgress"
-	Service_GetGuildProgress_FullMethodName            = "/service.Service/GetGuildProgress"
+	Service_GenerateVivoxToken_FullMethodName = "/service.Service/GenerateVivoxToken"
 )
 
 // ServiceClient is the client API for Service service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServiceClient interface {
-	CreateOrUpdateGuildProgress(ctx context.Context, in *CreateOrUpdateGuildProgressRequest, opts ...grpc.CallOption) (*CreateOrUpdateGuildProgressResponse, error)
-	GetGuildProgress(ctx context.Context, in *GetGuildProgressRequest, opts ...grpc.CallOption) (*GetGuildProgressResponse, error)
+	GenerateVivoxToken(ctx context.Context, in *GenerateVivoxTokenRequest, opts ...grpc.CallOption) (*GenerateVivoxTokenResponse, error)
 }
 
 type serviceClient struct {
@@ -43,18 +41,9 @@ func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
 	return &serviceClient{cc}
 }
 
-func (c *serviceClient) CreateOrUpdateGuildProgress(ctx context.Context, in *CreateOrUpdateGuildProgressRequest, opts ...grpc.CallOption) (*CreateOrUpdateGuildProgressResponse, error) {
-	out := new(CreateOrUpdateGuildProgressResponse)
-	err := c.cc.Invoke(ctx, Service_CreateOrUpdateGuildProgress_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *serviceClient) GetGuildProgress(ctx context.Context, in *GetGuildProgressRequest, opts ...grpc.CallOption) (*GetGuildProgressResponse, error) {
-	out := new(GetGuildProgressResponse)
-	err := c.cc.Invoke(ctx, Service_GetGuildProgress_FullMethodName, in, out, opts...)
+func (c *serviceClient) GenerateVivoxToken(ctx context.Context, in *GenerateVivoxTokenRequest, opts ...grpc.CallOption) (*GenerateVivoxTokenResponse, error) {
+	out := new(GenerateVivoxTokenResponse)
+	err := c.cc.Invoke(ctx, Service_GenerateVivoxToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,19 +54,15 @@ func (c *serviceClient) GetGuildProgress(ctx context.Context, in *GetGuildProgre
 // All implementations should embed UnimplementedServiceServer
 // for forward compatibility
 type ServiceServer interface {
-	CreateOrUpdateGuildProgress(context.Context, *CreateOrUpdateGuildProgressRequest) (*CreateOrUpdateGuildProgressResponse, error)
-	GetGuildProgress(context.Context, *GetGuildProgressRequest) (*GetGuildProgressResponse, error)
+	GenerateVivoxToken(context.Context, *GenerateVivoxTokenRequest) (*GenerateVivoxTokenResponse, error)
 }
 
 // UnimplementedServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedServiceServer struct {
 }
 
-func (UnimplementedServiceServer) CreateOrUpdateGuildProgress(context.Context, *CreateOrUpdateGuildProgressRequest) (*CreateOrUpdateGuildProgressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateOrUpdateGuildProgress not implemented")
-}
-func (UnimplementedServiceServer) GetGuildProgress(context.Context, *GetGuildProgressRequest) (*GetGuildProgressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGuildProgress not implemented")
+func (UnimplementedServiceServer) GenerateVivoxToken(context.Context, *GenerateVivoxTokenRequest) (*GenerateVivoxTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateVivoxToken not implemented")
 }
 
 // UnsafeServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -91,38 +76,20 @@ func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
 	s.RegisterService(&Service_ServiceDesc, srv)
 }
 
-func _Service_CreateOrUpdateGuildProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateOrUpdateGuildProgressRequest)
+func _Service_GenerateVivoxToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateVivoxTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServiceServer).CreateOrUpdateGuildProgress(ctx, in)
+		return srv.(ServiceServer).GenerateVivoxToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Service_CreateOrUpdateGuildProgress_FullMethodName,
+		FullMethod: Service_GenerateVivoxToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).CreateOrUpdateGuildProgress(ctx, req.(*CreateOrUpdateGuildProgressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Service_GetGuildProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGuildProgressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ServiceServer).GetGuildProgress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Service_GetGuildProgress_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).GetGuildProgress(ctx, req.(*GetGuildProgressRequest))
+		return srv.(ServiceServer).GenerateVivoxToken(ctx, req.(*GenerateVivoxTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -135,12 +102,8 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateOrUpdateGuildProgress",
-			Handler:    _Service_CreateOrUpdateGuildProgress_Handler,
-		},
-		{
-			MethodName: "GetGuildProgress",
-			Handler:    _Service_GetGuildProgress_Handler,
+			MethodName: "GenerateVivoxToken",
+			Handler:    _Service_GenerateVivoxToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
