@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2022-2024 AccelByte Inc. All Rights Reserved.
+﻿// Copyright (c) 2022-2025 AccelByte Inc. All Rights Reserved.
 // This is licensed software from AccelByte Inc, for limitations
 // and restrictions contact your company contract manager.
 
 using System;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 using Microsoft.Extensions.Logging;
 
@@ -62,10 +63,22 @@ namespace AccelByte.Extend.Vivox.Authentication.Server
                 if (authParts.Length != 2)
                     throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid authorization token format"));
 
+                qPermission = (new Regex(@"\{(namespace|NAMESPACE)\}")).Replace(qPermission, (m) => _ABProvider.Sdk.Namespace);
                 int actNum = (int)qAction;
-                bool b = _ABProvider.Sdk.ValidateToken(authParts[1], qPermission, actNum);
-                if (!b)
-                    throw new RpcException(new Status(StatusCode.PermissionDenied, $"Permission {qPermission} [{qAction}] is required."));                
+
+                if (!string.IsNullOrEmpty(qPermission) && actNum > 0)
+                {
+                    bool b = _ABProvider.Sdk.ValidateToken(authParts[1], qPermission, actNum);
+                    if (!b)
+                        throw new RpcException(new Status(StatusCode.PermissionDenied, $"Valid access token with permission {qPermission} [{qAction}] is required."));
+
+                }
+                else
+                {
+                    bool b = _ABProvider.Sdk.ValidateToken(authParts[1]);
+                    if (!b)
+                        throw new RpcException(new Status(StatusCode.PermissionDenied, $"Valid access token is required."));
+                } 
             }
             catch (RpcException)
             {
