@@ -136,11 +136,11 @@ If you need to customize this app, please refer to our [Extend Service Extension
          ...
          ```
 
-   d. .NET 6 SDK
+   d. .NET 8 SDK
 
       - On Linux Ubuntu:
 
-         To install from the Ubuntu repository, run `sudo apt-get update && sudo apt-get install -y dotnet-sdk-6.0`.
+         To install from the Ubuntu repository, run `sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0`.
 
       - On Windows or macOS:
 
@@ -149,7 +149,7 @@ If you need to customize this app, please refer to our [Extend Service Extension
          ```
          dotnet --version
          
-         6.0.128
+         8.0.119
          ```
 
    e. [Postman](https://www.postman.com/)
