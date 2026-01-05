@@ -1,3 +1,7 @@
+# Copyright (c) 2025 AccelByte Inc. All Rights Reserved.
+# This is licensed software from AccelByte Inc, for limitations
+# and restrictions contact your company contract manager.
+
 # gRPC gateway gen
 
 FROM --platform=$BUILDPLATFORM rvolosatovs/protoc:4.1.0 AS grpc-gateway-gen
@@ -7,16 +11,26 @@ COPY src src
 COPY proto.sh .
 RUN bash proto.sh
 
-# gRPC server builder
-
+# ----------------------------------------
+# Stage 1: gRPC Server Builder
+# ----------------------------------------
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.22 AS grpc-server-builder
 ARG TARGETARCH
+
 RUN apk update && apk add --no-cache gcompat
+
+# Set working directory.
 WORKDIR /project
+
+# Copy project file and restore dependencies.
 COPY src/AccelByte.Extend.Vivox.Authentication.Server/*.csproj .
 RUN ([ "$TARGETARCH" = "amd64" ] && echo "linux-musl-x64" || echo "linux-musl-$TARGETARCH") > /tmp/dotnet-rid
 RUN dotnet restore -r $(cat /tmp/dotnet-rid)
+
+# Copy application code.
 COPY src/AccelByte.Extend.Vivox.Authentication.Server .
+
+# Build and publish application.
 RUN dotnet publish -c Release -r $(cat /tmp/dotnet-rid) --no-restore -o /build/
 
 # gRPC gateway builder
@@ -31,10 +45,15 @@ RUN rm -rf pkg/pb
 COPY --from=grpc-gateway-gen /build/gateway/pkg/pb pkg/pb
 RUN GOARCH=$TARGETARCH go build -o grpc-gateway .
 
-# Extend Service Extension app
-
+# ----------------------------------------
+# Stage 2: Runtime Container
+# ----------------------------------------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.22
+
+# Set working directory.
 WORKDIR /app
+
+# Copy server build from stage 1.
 COPY --from=grpc-gateway-builder /build/grpc-gateway .
 COPY --from=grpc-gateway-gen /build/gateway/apidocs ./apidocs
 RUN rm -fv apidocs/permission.swagger.json
