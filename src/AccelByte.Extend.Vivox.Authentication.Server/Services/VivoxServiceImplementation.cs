@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 AccelByte Inc. All Rights Reserved.
+﻿// Copyright (c) 2024-2026 AccelByte Inc. All Rights Reserved.
 // This is licensed software from AccelByte Inc, for limitations
 // and restrictions contact your company contract manager.
 
@@ -49,7 +49,7 @@ namespace AccelByte.Extend.Vivox.Authentication.Server.Services
             }
 
             if (channelType == "")
-                throw new RpcException(new Status(StatusCode.InvalidArgument, "Channel type is required but invalid."));
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid value for `channelType`. Please use one of these values: echo, positional, or nonpositional."));
 
             return channelType;
         }
@@ -79,7 +79,7 @@ namespace AccelByte.Extend.Vivox.Authentication.Server.Services
             }
 
             if (token == null)
-                throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid request type"));
+                throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid value for `type`. Please use one of these values: login, join, join_muted, or kick."));
 
             GenerateVivoxTokenResponse response = new GenerateVivoxTokenResponse()
             {
