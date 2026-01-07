@@ -43,7 +43,7 @@ RUN go mod download
 COPY gateway/ .
 RUN rm -rf pkg/pb
 COPY --from=grpc-gateway-gen /build/gateway/pkg/pb pkg/pb
-RUN GOARCH=$TARGETARCH go build -o grpc-gateway .
+RUN GOARCH=$TARGETARCH go build -o grpc_gateway .
 
 # ----------------------------------------
 # Stage 2: Runtime Container
@@ -54,7 +54,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.22
 WORKDIR /app
 
 # Copy server build from stage 1.
-COPY --from=grpc-gateway-builder /build/grpc-gateway .
+COPY --from=grpc-gateway-builder /build/grpc_gateway .
 COPY --from=grpc-gateway-gen /build/gateway/apidocs ./apidocs
 RUN rm -fv apidocs/permission.swagger.json
 COPY gateway/third_party ./third_party
