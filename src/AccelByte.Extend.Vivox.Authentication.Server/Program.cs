@@ -28,9 +28,16 @@ namespace AccelByte.Extend.Vivox.Authentication.Server
         public static int Main(string[] args)
         {
             OpenTelemetry.Sdk.SetDefaultTextMapPropagator(new B3Propagator());
+
+            string? appServiceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME");
+            if (appServiceName == null)
+                appServiceName = "extend-app-vivox-auth";
+            else
+                appServiceName = $"extend-app-va-{appServiceName.Trim().ToLower()}";
+
             Metrics.DefaultRegistry.SetStaticLabels(new Dictionary<string, string>()
             {
-                { "application", "extend_vivox_auth_service" }
+                { "application", appServiceName }
             });
 
             var builder = WebApplication.CreateBuilder(args);
@@ -69,7 +76,7 @@ namespace AccelByte.Extend.Vivox.Authentication.Server
                     traceConfig
                         .AddSource(appResourceName)
                         .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                            .AddService(appResourceName, null, version)
+                            .AddService(appServiceName, null, version)
                             .AddTelemetrySdk())
                         .AddZipkinExporter()
                         .AddHttpClientInstrumentation()

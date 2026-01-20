@@ -29,6 +29,8 @@ namespace AccelByte.Extend.Vivox.Authentication.Server
 
         public string ResourceName { get; set; } = String.Empty;
 
+        public string ServiceName { get; set; } = "";
+
         public IHttpLogger? Logger { get; set; } = null;
 
         public void ReadEnvironmentVariables()
@@ -48,6 +50,12 @@ namespace AccelByte.Extend.Vivox.Authentication.Server
             string? abNamespace = Environment.GetEnvironmentVariable("AB_NAMESPACE");
             if ((abNamespace != null) && (abNamespace.Trim() != String.Empty))
                 Namespace = abNamespace.Trim();
+
+            string? appServiceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME");
+            if (appServiceName == null)
+                ServiceName = "extend-app-vivox-auth";
+            else
+                ServiceName = $"extend-app-va-{appServiceName.Trim().ToLower()}";
 
             string? appResourceName = Environment.GetEnvironmentVariable("APP_RESOURCE_NAME");
             if (appResourceName == null)
